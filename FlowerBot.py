@@ -1,7 +1,9 @@
 import discord
-import PIL.Image
+import os
 from discord.ext import commands
+from image_tools import emoji_tools
 
+# Choose bot command prefix
 bot = commands.Bot(command_prefix = '~')
 
 @bot.event
@@ -29,12 +31,21 @@ async def sendpics(ctx):
     f = discord.File("C:/Users/graha/OneDrive/Pictures/wolfs.jpg", filename="wolfys.jpg")
     await ctx.send(file=f) 
 
-# Sends the emoji you sent back as an image
+# Sends the emojis you sent back as an image
 @bot.command()
-async def emoji(ctx):
-    print(ctx.message.content)
-    b = bytes(ctx.message.content, 'utf-8')
-    print(b)
+async def emojitoimage(ctx, *args : str):
+    urls = []
+    # Loop through each arg
+    for arg in args:
+        # Try converting to Emoji object:
+        try:
+            Converter = commands.EmojiConverter()
+            emote = await Converter.convert(ctx=ctx,argument=arg)
+            await ctx.send(emote.url)
+            urls.append(emote.url)
+        except commands.EmojiNotFound:
+            await ctx.send(f'\'{arg}\' is not an emote.')   
+    print(urls)        
 
 # Put the bot's client secret key here
 bot.run('')
