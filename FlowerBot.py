@@ -57,4 +57,4 @@ async def emojitoimage(ctx, *args : str):
                 await ctx.send(f'\'{arg}\' is not an emote.')
 
 # Put the bot's client secret key here
-bot.run('Nzk4NjY4OTUyOTMzNzYxMDQ0.X_4YbA.4P0i8MdDL8mXXSoEAoZ9KW_YH2w')
+bot.run('')
