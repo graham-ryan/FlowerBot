@@ -1,6 +1,8 @@
 # FlowerBot
 A Discord bot to quickly edit pictures by layering emotes on them.
 
+![Demonstration of ~border](https://i.imgur.com/LZlNFMZ.png)
+
 Emotes can be either the default unicode ones, or custom made from Discord servers.
 
 Assets for default emotes comes from [Twemoji](https://github.com/twitter/twemoji) 
