@@ -3,8 +3,6 @@ A Discord bot to quickly edit pictures by layering emotes on them.
 
 Emotes can be either the default unicode ones, or custom made from Discord servers.
 
-Bot is written using the [DiscordPy API](https://discordpy.readthedocs.io/en/latest/index.html#)
-
 Assets for default emotes comes from [Twemoji](https://github.com/twitter/twemoji) 
 
 Translation / mapping to codepoint comes from UTF-8 [Unicode's Website](https://unicode.org/Public/emoji/13.1/emoji-test.txt)
