@@ -10,8 +10,8 @@ Translation / mapping to codepoint comes from UTF-8 [Unicode's Website](https://
 # Commands
 Command prefix is by default '~'
 
-* `border <Num. Emotes> <Emote>...` - In reply to another Discord message with an image embedded, sends an image back with the emotes and number of emotes specified in the command placed along the border
+* `border [Light/Normal/Chaos] <Emote>...` - In reply to another Discord message with an image attached or embedded, sends an image back with the emotes pasted along the border of it. Number of emotes and spacing based on the choice of Light / Normal / Chaos.
 
 * `emojitoimage <Emote>...` - Given any/all emotes in the command line, sends images of all the emotes back into the text channel
 
-* `gimmethat` - In reply to another Discord message with an image embedded, resends the image into the text channel
+* `gimmethat` - In reply to another Discord message with an image attached or embedded, resends the image into the text channel
