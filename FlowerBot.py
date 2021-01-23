@@ -119,4 +119,4 @@ async def border(ctx, placementType: str, *args : str):
                 
     
 # Put the bot's client secret key here
-bot.run('Nzk4NjY4OTUyOTMzNzYxMDQ0.X_4YbA.Xm8zPjUKM0l0RKJfY8xi0qH6ANo')
+bot.run('')
