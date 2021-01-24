@@ -27,17 +27,63 @@ def findAssociatedLine(arg: str):
             return(ans)      
     return False
 
+# Given a positions matrix and a position, turns 0s nearby the position to 0s (In a square like shape) so no emotes can be placed nearby this one in the future.
+async def removePositionsFromPositionsMatrix(positionsMatrix: numpy.ndarray, position: tuple):
+    leftX = position[0]-45 # Get left most x position of the square we turn to 0s
+    rightX = position[0]+60 # Get right most x position of square
+    topY = position[1]-36 # Get top most position of square
+    bottomY = position[1]+63 # Get bottom most position of square
+
+    shape = positionsMatrix.shape
+    # Make sure rightX and bottomY don't go out of bounds, based on the matrix's shape
+    if (rightX>shape[0]-1):
+        rightX=shape[0]-1
+    if (bottomY>shape[1]-1):
+        bottomY=shape[1]-1
+
+    for x in range(leftX,rightX):
+        for y in range(topY,bottomY):
+            if (x>=0 and y>=0):
+                positionsMatrix[x,y] = 0
+
+# Pastes images (sticker) onto another image (base) in the corner randomly based on the possible positions, in a chaotic way. Returns final image.
+async def pasteEmotesChaos(base: Image, emotes: list, positionsMatrix: numpy.ndarray):        
+    posX = range(base.width)
+    posY = range(base.height)
+
+    numPlacementPositions = numpy.sum(positionsMatrix)
+    emotesLength = len(emotes)
+
+    # Calculate how many emotes we want to send. 2.5 * number of possible emotes that can fit (if we just count their pixels).
+    numEmotes = int((numPlacementPositions/5184.0)*2.5)
+
+    # Paste the emotes.
+    for i in range(numEmotes):
+        sticker = emotes[i%emotesLength]
+        # A do while loop: ends when we find a position in the matrix with a 1
+        while True:
+            position = (numpy.random.choice(posX),numpy.random.choice(posY))
+            if (positionsMatrix[position[0],position[1]]==1):
+                break
+        position = (position[0]-15,position[1]-15) # Slightly adjust position (subtract 15) so left and top sides of the border have some emotes clipping through
+        # Paste sticker onto base image
+        base.paste(sticker,position,sticker)
+    return base
+
 # Pastes images (sticker) onto another image (base) in the corner randomly based on the possible positions, and based on placement type. Returns final image.
-async def pasteEmotes(base: Image, sticker: Image, positionsMatrix: numpy.ndarray, placementType : str):
-    sticker.thumbnail((72,72)) # Resize to 72x72. Default emotes are always 72x72, so this is just for custom ones.
-    sticker = sticker.convert('RGBA')
+async def pasteEmotesNormal(base: Image, emotes, positionsMatrix: numpy.ndarray):        
     posX = range(base.width)
     posY = range(base.height)
     # Count the number of 1s in the positionsMatrix
-    count = numpy.sum(positionsMatrix)
+    numPlacementPositions = numpy.sum(positionsMatrix)
+    emotesLength = len(emotes)
 
-    # Paste the desired number of emotes
-    for i in range(5):
+    # Calculate how many emotes we want to send. We use the number of possible emotes that can fit (if we just count their pixels) * 1.2.
+    numEmotes = int(numPlacementPositions/5184.0*1.2)
+
+    # Paste the emotes.
+    for i in range(numEmotes):
+        sticker = emotes[i%emotesLength]
         # A do while loop: ends when we find a position in the matrix with a 1
         while True:
             position = (numpy.random.choice(posX),numpy.random.choice(posY))
@@ -46,7 +92,36 @@ async def pasteEmotes(base: Image, sticker: Image, positionsMatrix: numpy.ndarra
         position = (position[0]-15,position[1]-15) # Slightly adjust position so left and top sides of the border have some emotes clipping through
         # Paste sticker onto base image
         base.paste(sticker,position,sticker)
-    base.show()
+        # Remove placement positions from positionsMatrix. This keeps the emotes in good spacing.
+        await removePositionsFromPositionsMatrix(positionsMatrix,position)
+
+    return base
+
+# Pastes images (sticker) onto another image (base) in the corner randomly based on the possible positions, and based on placement type. Returns final image.
+async def pasteEmotesLight(base: Image, emotes, positionsMatrix: numpy.ndarray):        
+    posX = range(base.width)
+    posY = range(base.height)
+    # Count the number of 1s in the positionsMatrix
+    numPlacementPositions = numpy.sum(positionsMatrix)
+    emotesLength = len(emotes)
+
+    # Calculate how many emotes we want to send. We use the number of possible emotes that can fit (if we just count their pixels) / 2
+    numEmotes = int(numPlacementPositions/5184.0/5.0)
+
+    # Paste the emotes.
+    for i in range(numEmotes):
+        sticker = emotes[i%emotesLength]
+        # A do while loop: ends when we find a position in the matrix with a 1
+        while True:
+            position = (numpy.random.choice(posX),numpy.random.choice(posY))
+            if (positionsMatrix[position[0],position[1]]==1):
+                break
+        position = (position[0]-15,position[1]-15) # Slightly adjust position so left and top sides of the border have some emotes clipping through
+        # Paste sticker onto base image
+        base.paste(sticker,position,sticker)
+        # Remove placement positions from positionsMatrix. This keeps the emotes in good spacing.
+        await removePositionsFromPositionsMatrix(positionsMatrix,position)
+
     return base
 
 # Generates posible positions for emojis to be pasted on the border. The border is 1/10 of the width/height. Returns a matrix with 1s where images can be placed, 0s where they can't.

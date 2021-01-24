@@ -24,7 +24,7 @@ async def getReplyingImage(ctx):
      else:
           return None
 
-# Given a Discordpy Asset object, returns a PIL image object
+# Given a Discordpy Asset object, returns a PIL image object.
 async def assetToImage(asset: discord.Asset) -> Image:
      imageBytes = io.BytesIO(await asset.read())
      return Image.open(imageBytes)
