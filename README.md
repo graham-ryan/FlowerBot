@@ -3,7 +3,9 @@ A Discord bot to quickly edit pictures by layering emotes on them.
 
 ![Demonstration of ~border](https://i.imgur.com/K4Ouy0u.png)
 
-Demonstration of the border command in 'normal' mode.
+(Demonstration of the border command in 'normal' mode.)
+
+
 
 Emotes can be either the default unicode ones, or custom made from Discord servers.
 
