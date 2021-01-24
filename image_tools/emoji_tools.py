@@ -27,17 +27,17 @@ def findAssociatedLine(arg: str):
             return(ans)      
     return False
 
-# Pastes images (sticker) onto another image (base) in the corner randomly based on the possible positions, and based on placement type. Returns final image.
-async def pasteEmotes(base: Image, sticker: Image, positionsMatrix: numpy.ndarray, placementType : str):
-    sticker.thumbnail((72,72)) # Resize to 72x72. Default emotes are always 72x72, so this is just for custom ones.
-    sticker = sticker.convert('RGBA')
+# Pastes images (sticker) onto another image (base) in the corner randomly based on the possible positions, in a chaotic way. Returns final image.
+async def pasteEmotesChaos(base: Image, emotes: list, positionsMatrix: numpy.ndarray):        
     posX = range(base.width)
     posY = range(base.height)
-    # Count the number of 1s in the positionsMatrix
-    count = numpy.sum(positionsMatrix)
 
-    # Paste the desired number of emotes
-    for i in range(5):
+    # Resize each emote to 72x72, and convert to RGBA so they have an alpha parameter for transparency.
+    emotesLength = len(emotes)
+
+    # Paste the emotes.
+    for i in range(100):
+        sticker = emotes[i%emotesLength]
         # A do while loop: ends when we find a position in the matrix with a 1
         while True:
             position = (numpy.random.choice(posX),numpy.random.choice(posY))
@@ -46,7 +46,46 @@ async def pasteEmotes(base: Image, sticker: Image, positionsMatrix: numpy.ndarra
         position = (position[0]-15,position[1]-15) # Slightly adjust position so left and top sides of the border have some emotes clipping through
         # Paste sticker onto base image
         base.paste(sticker,position,sticker)
-    base.show()
+    return base
+
+# Pastes images (sticker) onto another image (base) in the corner randomly based on the possible positions, and based on placement type. Returns final image.
+async def pasteEmotesNormal(base: Image, emotes, positionsMatrix: numpy.ndarray):        
+    posX = range(base.width)
+    posY = range(base.height)
+    # Count the number of 1s in the positionsMatrix
+    count = numpy.sum(positionsMatrix)
+
+    # Paste the desired number of emotes
+    for sticker in emotes: 
+        for i in range(5):
+            # A do while loop: ends when we find a position in the matrix with a 1
+            while True:
+                position = (numpy.random.choice(posX),numpy.random.choice(posY))
+                if (positionsMatrix[position[0],position[1]]==1):
+                    break
+            position = (position[0]-15,position[1]-15) # Slightly adjust position so left and top sides of the border have some emotes clipping through
+            # Paste sticker onto base image
+            base.paste(sticker,position,sticker)
+    return base
+
+# Pastes images (sticker) onto another image (base) in the corner randomly based on the possible positions, and based on placement type. Returns final image.
+async def pasteEmotesLight(base: Image, emotes, positionsMatrix: numpy.ndarray):        
+    posX = range(base.width)
+    posY = range(base.height)
+    # Count the number of 1s in the positionsMatrix
+    count = numpy.sum(positionsMatrix)
+
+    # Paste the desired number of emotes
+    for sticker in emotes: 
+        for i in range(5):
+            # A do while loop: ends when we find a position in the matrix with a 1
+            while True:
+                position = (numpy.random.choice(posX),numpy.random.choice(posY))
+                if (positionsMatrix[position[0],position[1]]==1):
+                    break
+            position = (position[0]-15,position[1]-15) # Slightly adjust position so left and top sides of the border have some emotes clipping through
+            # Paste sticker onto base image
+            base.paste(sticker,position,sticker)
     return base
 
 # Generates posible positions for emojis to be pasted on the border. The border is 1/10 of the width/height. Returns a matrix with 1s where images can be placed, 0s where they can't.

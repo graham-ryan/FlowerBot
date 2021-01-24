@@ -86,7 +86,11 @@ async def border(ctx, placementType: str, *args : str):
         if (base == None):
             await ctx.send('You must reply to a message with an image to use this command.')
         else:
-            # Base image successfully created
+            # Base image successfully created.
+            # Resize base image if its width or height is greater than 1500p
+            ratioOfResize = min(1500.0/base.width,1500.0/base.height)
+            if (ratioOfResize<1):
+                base = base.resize((int(ratioOfResize*base.width),int(ratioOfResize*base.height)))
             # Create list of emoji pics
             emotes = []
             # Loop through each arg and get emotes
@@ -95,22 +99,34 @@ async def border(ctx, placementType: str, *args : str):
                 try:
                     Converter = commands.EmojiConverter()
                     emote = await Converter.convert(ctx=ctx,argument=arg)
-                    emotes.append(await FlowerBotHelpers.assetToImage(emote.url))
+                    emoteImage = await FlowerBotHelpers.assetToImage(emote.url)
+                    emoteImage.thumbnail((72,72)) # Resize to 72x72. Default emotes are always 72x72, so this is just for custom ones.
+                    emoteImage = emoteImage.convert('RGBA')
+                    emotes.append(emoteImage)
                 except (commands.EmojiNotFound):
                     # Try to find emoji
                     codePoint = emoji_tools.findCodePoint(arg)
                     if (codePoint != False):
                         # Get the image and send it
-                        emotes.append(Image.open(f"{dirname}/72x72/{codePoint}.png"))             
+                        emoteImage = Image.open(f"{dirname}/72x72/{codePoint}.png")
+                        emoteImage.thumbnail((72,72)) # Resize to 72x72. Default emotes are always 72x72, so this is just for custom ones.
+                        emoteImage = emoteImage.convert('RGBA')
+                        emotes.append(emoteImage)
                     else:
                         await ctx.send(f'\'{arg}\' is not a valid emote.')
             # Check if any emotes were successfully parsed. If so, generate the image. Else, display an error.
             if len(emotes) > 0:
-                possiblePositions = emoji_tools.generatePossibleBorderPositions(base,True) # Generate possible positions matrix
+                # Generate possible positions matrix
+                possiblePositions = emoji_tools.generatePossibleBorderPositions(base,True)
+                # Make the final image
+                if placementType.lower() == 'light':
+                    finalImage = await emoji_tools.pasteEmotesLight(base, emotes, possiblePositions)
+                elif placementType.lower() == 'normal':
+                    finalImage = await emoji_tools.pasteEmotesNormal(base, emotes, possiblePositions)
+                elif placementType.lower() == 'chaos':
+                    finalImage = await emoji_tools.pasteEmotesChaos(base, emotes, possiblePositions)
                 # Convert PIL Image to bytes object so discord can send it as a file.
                 with io.BytesIO() as by:
-                    for emote in emotes:
-                        finalImage = await emoji_tools.pasteEmotes(base, emote, possiblePositions, placementType)
                     finalImage.save(by,"PNG")
                     by.seek(0)
                     await ctx.send(file=discord.File(fp=by,filename="border.png"))
@@ -119,4 +135,4 @@ async def border(ctx, placementType: str, *args : str):
                 
     
 # Put the bot's client secret key here
-bot.run('')
+bot.run('Nzk4NjY4OTUyOTMzNzYxMDQ0.X_4YbA.YaSBsuw-UOmtaV8bZy7IWDaELk0')
