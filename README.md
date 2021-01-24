@@ -1,8 +1,8 @@
 # FlowerBot
 A Discord bot to quickly edit pictures by layering emotes on them.
 
-![Demonstration of ~border](https://i.imgur.com/LZlNFMZ.png)
-Demonstration of `~border chaos :sunflower: :rose: :blossom:`
+![Demonstration of ~border](https://i.imgur.com/K4Ouy0u.png)
+Demonstration of the border command in 'normal' mode.
 
 Emotes can be either the default unicode ones, or custom made from Discord servers.
 
